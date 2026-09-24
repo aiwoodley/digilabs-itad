@@ -131,11 +131,17 @@ async function handleBookPickup(args: Record<string, unknown>, supabase: ReturnT
     return { ok: true, ticket: contract, message: `Booked. Reference number ${contract}. Our team will follow up to confirm timing.` };
   }
 
-  // residential / drop-off (default)
+  // Generate the id ourselves - the anon role can INSERT into dl101_dropoff
+  // (RLS policy anon_insert_dl101) but has no SELECT policy, so .select() on
+  // the insert (which requires an implicit read-back) fails RLS even though
+  // the insert itself would succeed. Supplying our own id avoids ever needing
+  // Postgres to hand a row back to the anon role.
   const ticket = ticketNumber("DL");
-  const { data, error } = await supabase
+  const dropoffId = crypto.randomUUID();
+  const { error } = await supabase
     .from("dl101_dropoff")
     .insert({
+      id: dropoffId,
       ticket_number: ticket,
       drop_off_date: args.drop_off_date ?? new Date().toISOString().slice(0, 10),
       full_name: args.full_name ?? args.name ?? "Unknown",
@@ -148,21 +154,20 @@ async function handleBookPickup(args: Record<string, unknown>, supabase: ReturnT
       data_backed_up: Boolean(args.data_backed_up ?? false),
       authorize_destruction: Boolean(args.authorize_destruction ?? false),
       confirm_ownership: Boolean(args.confirm_ownership ?? false),
-    })
-    .select("id")
-    .single();
+    });
 
-  if (error || !data) {
+  if (error) {
     console.error(error);
     return { ok: false, message: "I couldn't complete the booking just now - I'll have someone follow up directly to get this scheduled." };
   }
 
   if (args.device_description) {
-    await supabase.from("dl101_devices").insert({
-      dropoff_id: data.id,
+    const { error: deviceError } = await supabase.from("dl101_devices").insert({
+      dropoff_id: dropoffId,
       line_number: 1,
       device_type: String(args.device_description),
     });
+    if (deviceError) console.error("device insert failed (booking still succeeded):", deviceError);
   }
 
   return { ok: true, ticket, message: `Booked. Reference number ${ticket}. Our team will follow up to confirm the pickup window.` };
