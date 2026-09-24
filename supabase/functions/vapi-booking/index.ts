@@ -193,6 +193,86 @@ async function handleEscalate(args: Record<string, unknown>) {
   return { ok: true, message: "I've passed this along and someone from our team will get back to you by the next business day." };
 }
 
+// ---------------------------------------------------------------------------
+// End-of-call report: Vapi posts this after every call ends. Email a summary,
+// the outcome (booked / escalated / neither), the recording link, and the full
+// transcript to CALL_REPORT_EMAIL_TO. Sent straight through Resend (the same
+// RESEND_API_KEY and from-address as send-email) so it never depends on a
+// template deploy.
+// ---------------------------------------------------------------------------
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const CALL_REPORT_EMAIL_TO = (Deno.env.get("CALL_REPORT_EMAIL_TO") ?? "admin@digi-labs.org")
+  .split(",").map((s) => s.trim()).filter(Boolean);
+
+function esc(s: unknown): string {
+  return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// deno-lint-ignore no-explicit-any
+async function sendCallReport(msg: any) {
+  if (!RESEND_API_KEY) {
+    console.warn("call report skipped: RESEND_API_KEY not set");
+    return;
+  }
+  const call = msg.call ?? {};
+  const caller = call.customer?.number ?? msg.customer?.number ?? "unknown number";
+  const started = msg.startedAt ?? call.startedAt;
+  const ended = msg.endedAt ?? call.endedAt;
+  const durationSec = msg.durationSeconds ??
+    (started && ended ? Math.round((Date.parse(ended) - Date.parse(started)) / 1000) : null);
+  const summary = msg.analysis?.summary ?? msg.summary ?? "(no summary generated)";
+  const transcript: string = msg.artifact?.transcript ?? msg.transcript ?? "";
+  const recording = msg.artifact?.recordingUrl ?? msg.recordingUrl ?? msg.stereoRecordingUrl ?? null;
+
+  // Work out the outcome from the tool calls made during the call.
+  // deno-lint-ignore no-explicit-any
+  const messages: any[] = msg.artifact?.messages ?? msg.messages ?? [];
+  const toolNames = new Set<string>();
+  let ticket: string | null = null;
+  for (const m of messages) {
+    for (const tc of m.toolCalls ?? []) if (tc?.function?.name) toolNames.add(tc.function.name);
+    const text = typeof m.result === "string" ? m.result : typeof m.message === "string" ? m.message : "";
+    const hit = text.match(/\b(DL|BIZ)-[A-Z0-9]+\b/);
+    if (hit) ticket = hit[0];
+  }
+  const outcome = toolNames.has("book_pickup")
+    ? `Booked${ticket ? ` (ticket ${ticket})` : ""}`
+    : toolNames.has("escalate") ? "Escalated, needs a callback by the next business day" : "No booking (question or hang-up)";
+
+  const when = started
+    ? new Date(started).toLocaleString("en-US", { timeZone: "America/New_York", dateStyle: "medium", timeStyle: "short" })
+    : "unknown time";
+  const subject = `Call report: ${outcome.split(" (")[0]} (${caller}, ${when})`;
+  const html = `
+  <div style="font-family:Arial,Helvetica,sans-serif;max-width:640px;margin:0 auto;color:#111">
+    <img src="https://www.digi-labs.org/assets/digilabs-icon.png" width="40" height="40" alt="DigiLabs" style="display:block;margin-bottom:8px">
+    <h2 style="margin:0 0 12px">DigiLabs ITAD: phone call report</h2>
+    <table style="border-collapse:collapse;font-size:14px;margin-bottom:16px">
+      <tr><td style="padding:4px 12px 4px 0;color:#555">Caller</td><td><a href="tel:${esc(caller)}">${esc(caller)}</a></td></tr>
+      <tr><td style="padding:4px 12px 4px 0;color:#555">When</td><td>${esc(when)} ET</td></tr>
+      <tr><td style="padding:4px 12px 4px 0;color:#555">Duration</td><td>${durationSec != null ? `${Math.floor(durationSec / 60)}m ${durationSec % 60}s` : "n/a"}</td></tr>
+      <tr><td style="padding:4px 12px 4px 0;color:#555">Outcome</td><td><strong>${esc(outcome)}</strong></td></tr>
+      <tr><td style="padding:4px 12px 4px 0;color:#555">Ended</td><td>${esc(msg.endedReason ?? "")}</td></tr>
+      ${recording ? `<tr><td style="padding:4px 12px 4px 0;color:#555">Recording</td><td><a href="${esc(recording)}">Listen</a></td></tr>` : ""}
+    </table>
+    <h3 style="margin:0 0 6px">Summary</h3>
+    <p style="font-size:14px;line-height:1.5;margin:0 0 16px">${esc(summary)}</p>
+    <h3 style="margin:0 0 6px">Transcript</h3>
+    <pre style="white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.5;background:#f5f7fa;padding:12px;border-radius:6px">${esc(transcript || "(empty)")}</pre>
+  </div>`;
+
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: "DigiLabs <admin@digi-labs.org>", to: CALL_REPORT_EMAIL_TO, subject, html }),
+    });
+    if (!res.ok) console.warn("call report email failed:", res.status, await res.text());
+  } catch (err) {
+    console.warn("call report email request failed:", err);
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -201,11 +281,17 @@ Deno.serve(async (req) => {
     if (provided !== VAPI_WEBHOOK_SECRET) return json({ error: "unauthorized" }, 401);
   }
 
-  let body: { message?: { toolCalls?: VapiToolCall[] } };
+  // deno-lint-ignore no-explicit-any
+  let body: { message?: { type?: string; toolCalls?: VapiToolCall[]; [k: string]: any } };
   try {
     body = await req.json();
   } catch {
     return json({ error: "invalid json" }, 400);
+  }
+
+  if (body.message?.type === "end-of-call-report") {
+    await sendCallReport(body.message);
+    return json({ ok: true });
   }
 
   const toolCalls = body.message?.toolCalls ?? [];
