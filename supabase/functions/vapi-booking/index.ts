@@ -18,7 +18,7 @@ const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
 const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
 const TWILIO_FROM_NUMBER = Deno.env.get("TWILIO_FROM_NUMBER"); // the new AI line
 const ESCALATION_SMS_TO = (Deno.env.get("ESCALATION_SMS_TO") ?? "").split(",").map((s) => s.trim()).filter(Boolean);
-const ESCALATION_EMAIL_TO = Deno.env.get("ESCALATION_EMAIL_TO") ?? "admin@digi-labs.org";
+const ESCALATION_EMAIL_TO = (Deno.env.get("ESCALATION_EMAIL_TO") ?? "admin@digi-labs.org").split(",").map((s) => s.trim()).filter(Boolean);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -82,19 +82,21 @@ async function sendEscalationSms(text: string) {
 }
 
 async function sendEscalationEmail(subject: string, summary: string) {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${SUPABASE_ANON_KEY}`, apikey: SUPABASE_ANON_KEY },
-      body: JSON.stringify({
-        type: "phone_escalation",
-        to: ESCALATION_EMAIL_TO,
-        data: { subject, summary },
-      }),
-    });
-    if (!res.ok) console.warn("Escalation email not sent:", res.status, await res.text());
-  } catch (err) {
-    console.warn("Escalation email request failed:", err);
+  for (const to of ESCALATION_EMAIL_TO) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${SUPABASE_ANON_KEY}`, apikey: SUPABASE_ANON_KEY },
+        body: JSON.stringify({
+          type: "phone_escalation",
+          to,
+          data: { subject, summary },
+        }),
+      });
+      if (!res.ok) console.warn("Escalation email not sent:", to, res.status, await res.text());
+    } catch (err) {
+      console.warn("Escalation email request failed:", to, err);
+    }
   }
 }
 
