@@ -100,6 +100,12 @@ async function sendEscalationEmail(subject: string, summary: string) {
   }
 }
 
+function toIntOrNull(v: unknown): number | null {
+  if (v === null || v === undefined || v === "") return null;
+  const n = typeof v === "number" ? v : parseInt(String(v), 10);
+  return Number.isFinite(n) ? n : null;
+}
+
 async function handleBookPickup(args: Record<string, unknown>, supabase: ReturnType<typeof createClient>) {
   const kind = String(args.kind ?? "residential").toLowerCase();
 
@@ -111,17 +117,17 @@ async function handleBookPickup(args: Record<string, unknown>, supabase: ReturnT
       contact_name: args.contact_name ?? args.full_name ?? "Unknown",
       contact_title: args.contact_title ?? null,
       contact_phone: args.contact_phone ?? args.phone ?? null,
-      contact_email: args.contact_email ?? args.email ?? null,
+      contact_email: args.contact_email ?? args.email ?? "no-email-provided@digi-labs.org",
       preferred_contact_method: args.preferred_contact_method ?? "phone",
       collection_address: args.collection_address ?? args.street_address ?? null,
       address_city: args.address_city ?? args.city ?? null,
       address_state: "FL",
       address_zip: args.address_zip ?? args.zip ?? null,
-      service_frequency_text: args.service_frequency_text ?? null,
+      service_frequency_text: args.service_frequency_text ?? "one-time (details pending team follow-up)",
       preferred_time_window: args.preferred_time_window ?? null,
-      est_desktops: args.est_desktops ?? null,
-      est_laptops: args.est_laptops ?? null,
-      est_monitors_lcd: args.est_monitors_lcd ?? null,
+      est_desktops: toIntOrNull(args.est_desktops),
+      est_laptops: toIntOrNull(args.est_laptops),
+      est_monitors_lcd: toIntOrNull(args.est_monitors_lcd),
       est_other_notes: args.device_description ?? args.est_other_notes ?? null,
     });
     if (error) {
