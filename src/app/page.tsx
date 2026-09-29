@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { DropoffForm } from "@/components/forms/DropoffForm";
 
 export const metadata: Metadata = {
-  title: "DigiLabs ITAD — Certified E-Waste Recycling & Data Destruction",
+  title: "DigiLabs ITAD — Data Destruction & E-Waste Recycling",
   description:
-    "NIST 800-88 certified data destruction and e-waste recycling for homes and businesses across Broward, Miami-Dade, and Palm Beach counties. Call 754-274-6614.",
+    "NIST 800-88 data destruction and e-waste recycling, processed through R2v3-certified partners. South Florida based, business pickups statewide by arrangement. Call 754-274-6614.",
 };
 
 export default function HomePage() {
@@ -36,13 +36,14 @@ export default function HomePage() {
           <span className="fx-ring" style={{ top: "8%", right: "24%", width: 110, height: 110 }} />
         </div>
         <div className="wrap">
-          <span className="mono kicker">Certified Data Destruction · E-Waste Recycling</span>
+          <span className="mono kicker">Data Destruction · E-Waste Recycling · R2v3-Certified Partners</span>
           <h1>Retire your old tech without the data-leak worry.</h1>
           <p className="lead">
             DigiLabs ITAD picks up or accepts drop-offs of retired computers, phones, and office
-            equipment across South Florida, destroys any data to NIST 800-88 standards, and hands
-            you a Certificate of Destruction for your records. Working devices get refurbished and
-            given a second life — nothing goes to the landfill.
+            equipment across South Florida, and handles business pickups statewide by arrangement.
+            We sanitize or destroy data to NIST 800-88 guidelines and hand you a serialized
+            Certificate of Destruction for your records. Working devices get refurbished and given
+            a second life; everything else goes to our R2v3-certified recycling partner.
           </p>
           <div className="hero-actions">
             <a href="#intake" className="btn btn-primary">Schedule a Pickup or Drop-off</a>
@@ -71,7 +72,7 @@ export default function HomePage() {
             <div className="panel">
               <p className="mono mt0">03</p>
               <h3 className="mt0">Your tech gets a second life</h3>
-              <p>Working devices are refurbished and resold or donated. The rest is recycled responsibly. Nothing goes to the landfill.</p>
+              <p>Working devices are refurbished and resold or donated. Everything else is recycled through our R2v3-certified downstream partner.</p>
             </div>
           </div>
         </div>
@@ -81,7 +82,7 @@ export default function HomePage() {
         <div className="wrap">
           <div className="grid grid-2">
             <div>
-              <span className="badge">Certified &amp; documented</span>
+              <span className="badge">Documented, device by device</span>
               <h2>NIST 800-88 destruction, every time</h2>
               <p className="lead">
                 Every data-bearing device we take in goes through Clear, Purge, or Destroy
@@ -93,8 +94,10 @@ export default function HomePage() {
             </div>
             <div className="panel">
               <h3 className="mt0">Who we serve</h3>
-              <p>Homes, offices, and schools across Broward, Miami-Dade, and Palm Beach counties.</p>
-              <p className="mono form-note mb0">Residential drop-offs · business pickups · recurring commercial service</p>
+              <p>Homes, offices, and schools across Broward, Miami-Dade, and Palm Beach counties, plus business pickups anywhere in Florida by arrangement.</p>
+              <p className="mono form-note">Residential drop-offs · business pickups · recurring commercial service</p>
+              <h3>How we&apos;re certified</h3>
+              <p className="mb0">DigiLabs ITAD handles pickup, inventory, chain of custody, and NIST 800-88 data sanitization. Final shredding and recycling go through our R2v3-certified downstream partner, and you get their documentation along with ours. DigiLabs itself does not currently hold R2v3 or NAID AAA certification, and we&apos;ll always tell you exactly who handles what.</p>
             </div>
           </div>
         </div>

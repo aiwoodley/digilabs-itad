@@ -18,8 +18,9 @@ export function SiteFooter() {
             </div>
             <p style={{ maxWidth: 300 }}>ITAD &amp; E-Waste Recycling.</p>
             <p className="form-note" style={{ maxWidth: 300 }}>
-              NIST 800-88 certified data destruction and e-waste recycling across Broward,
-              Miami-Dade and Palm Beach counties. Part of the DigiLabs family, alongside{" "}
+              NIST 800-88 data destruction and e-waste recycling, processed through
+              R2v3-certified partners. South Florida based; business pickups statewide by
+              arrangement. Part of the DigiLabs family, alongside{" "}
               <a href="https://digilabs-tech.netlify.app" target="_blank" rel="noreferrer">
                 DigiLabs Education
               </a>
@@ -57,7 +58,7 @@ export function SiteFooter() {
             </p>
           </div>
         </div>
-        <p className="fine">© {year} DigiLabs ITAD. Certified data destruction &amp; e-waste recycling.</p>
+        <p className="fine">© {year} DigiLabs ITAD. Data destruction &amp; e-waste recycling through R2v3-certified partners.</p>
       </div>
     </footer>
   );

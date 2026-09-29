@@ -9,9 +9,9 @@ import { RevealObserver } from "@/components/site/RevealObserver";
 const META_PIXEL_ID = "4436804053259784";
 
 export const metadata: Metadata = {
-  title: "DigiLabs ITAD — Certified E-Waste Recycling & Data Destruction",
+  title: "DigiLabs ITAD — Data Destruction & E-Waste Recycling",
   description:
-    "NIST 800-88 certified data destruction and e-waste recycling for homes and businesses across Broward, Miami-Dade, and Palm Beach counties.",
+    "NIST 800-88 data destruction and e-waste recycling, processed through R2v3-certified partners. Based in South Florida, with business pickups statewide by arrangement.",
   icons: {
     icon: [
       { url: "/assets/favicon-32.png", sizes: "32x32", type: "image/png" },

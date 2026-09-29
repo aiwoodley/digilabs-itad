@@ -5,7 +5,7 @@ import { BusinessForm } from "@/components/forms/BusinessForm";
 export const metadata: Metadata = {
   title: "Services — DigiLabs ITAD",
   description:
-    "Certified data destruction and e-waste recycling for individuals and businesses across Broward, Miami-Dade, and Palm Beach counties.",
+    "NIST 800-88 data destruction and e-waste recycling, processed through R2v3-certified partners. South Florida based, business pickups statewide by arrangement.",
 };
 
 export default function ServicesPage() {
@@ -40,8 +40,9 @@ export default function ServicesPage() {
           <span className="mono kicker">ITAD · Recycling</span>
           <h1>What DigiLabs ITAD Offers</h1>
           <p className="lead">
-            Certified data destruction and e-waste recycling for individuals and businesses,
-            serving Broward, Miami-Dade, and Palm Beach counties.
+            Documented data destruction and e-waste recycling for individuals and businesses in
+            Broward, Miami-Dade, and Palm Beach counties, plus business pickups statewide by
+            arrangement. Final recycling goes through our R2v3-certified downstream partner.
           </p>
         </div>
       </section>
@@ -53,7 +54,8 @@ export default function ServicesPage() {
             <p>
               Old tech out of your way this week. Call or text 754-274-6614, or book online in
               under two minutes. We pick up from homes, offices, and schools across Broward,
-              Miami-Dade, and Palm Beach, or you can drop off directly. Sorted and processed in
+              Miami-Dade, and Palm Beach, and from businesses elsewhere in Florida by
+              arrangement, or you can drop off directly. Sorted and processed in
               line with Florida DEP requirements.
             </p>
             <div style={{ marginTop: 14 }}>
@@ -62,13 +64,14 @@ export default function ServicesPage() {
             </div>
           </div>
           <div className="card reveal">
-            <h3 id="itad">ITAD &amp; Certified Data Destruction</h3>
+            <h3 id="itad">ITAD &amp; Data Destruction</h3>
             <p>
               Retire old devices without the &quot;what if our data leaks&quot; worry. We start
               with a tech audit of what you have, destroy data to NIST 800-88 standards with full
               chain-of-custody, and hand you a Certificate of Destruction for your records.
-              Devices with life left get wiped and refurbished, then resold or donated, so working
-              tech helps someone instead of filling a landfill.
+              Devices with life left get wiped and refurbished, then resold or donated. Drives
+              marked for destruction and non-reusable equipment go to our R2v3-certified
+              downstream partner for shredding and recycling.
             </p>
           </div>
         </div>
@@ -78,7 +81,7 @@ export default function ServicesPage() {
         <div className="wrap">
           <div className="section-head">
             <span className="badge">The process</span>
-            <h2>How certified destruction works</h2>
+            <h2>How documented destruction works</h2>
           </div>
           <div className="grid grid-3">
             <div className="panel">
