@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BusinessForm } from "@/components/forms/BusinessForm";
+import { IntakeForm } from "@/components/forms/IntakeForm";
 
 export const metadata: Metadata = {
   title: "Get Involved — DigiLabs ITAD",
@@ -79,7 +79,7 @@ export default function GetInvolvedPage() {
               </div>
             </div>
             <div className="panel">
-              <BusinessForm />
+              <IntakeForm defaultType="business" />
             </div>
           </div>
         </div>

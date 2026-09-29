@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DropoffForm } from "@/components/forms/DropoffForm";
+import { IntakeForm } from "@/components/forms/IntakeForm";
 
 export const metadata: Metadata = {
   title: "DigiLabs ITAD — Data Destruction & E-Waste Recycling",
@@ -108,8 +108,8 @@ export default function HomePage() {
           <div className="grid grid-2">
             <div>
               <span className="badge green">Schedule now</span>
-              <h2>Request a pickup, drop-off, or device donation</h2>
-              <p>Tell us what you&apos;ve got and where you&apos;re located. We&apos;ll follow up to confirm timing — or skip the form and just call us.</p>
+              <h2>Tell us what you&apos;re retiring</h2>
+              <p>Individuals and businesses both use this form. Give us rough counts, whether drives are still inside, and what kind of data might be on them. We&apos;ll confirm pricing and timing within one business day. We log every serial number ourselves at pickup, and you get a serialized Certificate of Destruction when the job closes.</p>
               <div className="panel" style={{ marginTop: 20 }}>
                 <p className="mono mt0">Prefer to talk it through?</p>
                 <a href="tel:7542746614" className="btn btn-call btn-block">📞 Call 754-274-6614</a>
@@ -120,7 +120,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="panel">
-              <DropoffForm />
+              <IntakeForm />
             </div>
           </div>
         </div>
