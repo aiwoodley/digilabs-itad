@@ -1,3 +1,5 @@
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/config";
+
 // Fire-and-log confirmation email via the shared DigiLabs Supabase project's
 // send-email edge function. Never blocks or fails the caller — if the
 // request errors, we just log it quietly so the Supabase write still counts
@@ -5,8 +7,8 @@
 export async function sendEmail(type: string, to: string | null | undefined, data: unknown) {
   if (!to) return;
 
-  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/send-email`;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const url = `${SUPABASE_URL}/functions/v1/send-email`;
+  const anonKey = SUPABASE_ANON_KEY;
 
   try {
     const res = await fetch(url, {
